@@ -13,7 +13,9 @@ uint8_t array1[160] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
 uint8_t unused2[64]; // seperate by a cacheline
 uint8_t array2[MAX_BYTE*64];
 // Whether secret is const char* or just char* matters
-const char* secret = "The cake is a lie!";
+
+// Want to test how this handles similar patterns, so 'khd' is 'lie' offset by 1 char
+const char* secret = "The cake is a lie! The cake is a khd!";
 
 volatile uint8_t get_elem(size_t x)
 {
@@ -38,11 +40,11 @@ TEST_CASE("Spectrev1", "[branch]")
     );
 
     uint8_t val;
-    for (size_t i = 0; i < 40; ++i)
+    for (size_t i = 0; i < 37; ++i)
     {
         s.read_byte(CVMEM_ADD(const_cast<char*>(secret), i), &val);
-//        printf("0x%02X = %c\n", val, val);
         REQUIRE(val == secret[i]);
+        printf("0x%02X = %c\n", val, val);
     }
 
 }
