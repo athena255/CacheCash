@@ -36,14 +36,14 @@ inline volatile uint64_t flush(void volatile * const mem)
 {
     volatile uint64_t diff;
     __asm__ volatile(
+            "mfence;"               // ensure all stores included in the cache line are flushed
             "rdtscp;"
             "movl %%eax, %%esi;"
-            "mfence;"               // ensure all stores included in the cache line are flushed
-            "clflushopt (%%rdi);"
+            "clflush 0 (%%rdi);"
 //            "mfence;"               // avoid invalidating prefetched cache lines
             "rdtscp;"
             "subl %%esi, %%eax;"
-            : "=A"(diff)
+            : "=a"(diff)
             : "D"(mem)
             : "%esi", "%rcx", "%rdx");
     return diff;

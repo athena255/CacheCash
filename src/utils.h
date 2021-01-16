@@ -25,6 +25,6 @@
 // Mix up the index order to prevent stride prediction
 // Require: 0 <= i <= 255
 // Can replace 173 and 17, prime numbers seem to work best
-#define MIX(_i) (((_i*167) + 13) & 255)
+#define MIX(_i) (((_i*167) + 11) & 255)
 
 #endif //CACHECASH_UTILS_H

