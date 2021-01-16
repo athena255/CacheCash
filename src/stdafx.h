@@ -6,8 +6,6 @@
 #define CACHECASH_STDAFX_H
 
 #include <cpuid.h>
-#include <x86intrin.h>
-#include <immintrin.h>
 #include <cstring>
 #include <random>
 #include <iostream>

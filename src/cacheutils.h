@@ -5,7 +5,7 @@
 #ifndef CACHECASH_CACHEUTILS_H
 #define CACHECASH_CACHEUTILS_H
 
-inline volatile uint64_t load(volatile void* mem)
+inline volatile uint64_t load(const volatile void* mem)
 {
     volatile uint64_t diff;
 //    __asm__ volatile(
@@ -32,15 +32,15 @@ inline volatile uint64_t load(volatile void* mem)
     return diff;
 }
 
-inline volatile uint64_t flush(volatile void* mem)
+inline volatile uint64_t flush(const volatile void* mem)
 {
     volatile uint64_t diff;
     __asm__ volatile(
             "rdtscp;"
             "movl %%eax, %%esi;"
             "mfence;"               // ensure all stores included in the cache line are flushed
-            "clflushopt 0 (%%rdi);"
-            "mfence;"               // avoid invalidating prefetched cache lines
+            "clflushopt (%%rdi);"
+//            "mfence;"               // avoid invalidating prefetched cache lines
             "rdtscp;"
             "subl %%esi, %%eax;"
             : "=A"(diff)

@@ -29,8 +29,7 @@ int main()
 {
     Spectrev1 s(array1,
                 array2,
-                get_elem,
-                []{flush(&array1_size);},
+                [](volatile size_t x){flush(&array1_size); get_elem(x);},
                 [](size_t _t){return _t%array1_size;},
                 BLOCK_LEN,
                 MAX_TRIES,

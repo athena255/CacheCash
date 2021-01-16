@@ -171,27 +171,3 @@ TEST_CASE("map to 1 and 0", "[.mispredict]")
     REQUIRE((map(1, n_trainings)) == 0);
     REQUIRE((map(0, n_trainings)) == -1);
 }
-
-TEST_CASE("Spectrev1", "[.branch]")
-{
-    Spectrev1 s(array1,
-                array2,
-                get_elem,
-                []{flush(&array1_size);},
-                [](size_t _t){return _t%array1_size;},
-                BLOCK_LEN,
-                MAX_TRIES,
-                27
-    );
-
-    // Make sure memory is backed
-    memset(array2, 1, sizeof(array2));
-
-    uint8_t recovered[20];
-    s.read(secret, 18, recovered);
-    recovered[18] = 0;
-    for (size_t i = 0; i  < 19; ++i)
-    {
-        REQUIRE(recovered[i] == secret[i]);
-    }
-}

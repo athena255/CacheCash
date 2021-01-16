@@ -5,7 +5,8 @@
 #include <stdafx.h>
 #include <cacheutils.h>
 // TODO: Call get_thresh first since it tends to be weird on the first call
-
+#include <x86intrin.h>
+#include <immintrin.h>
 TEST_CASE ("read fs and gs", "[.read seg desc]")
 {
     // read fs base

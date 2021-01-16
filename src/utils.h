@@ -12,6 +12,8 @@
 #define D(msg)do{}while(0);
 #endif
 #define MEM_ADD(addr, off) reinterpret_cast<void*>(reinterpret_cast<uint8_t*>(addr) + off)
+#define CVMEM_ADD(addr, off) reinterpret_cast<const volatile void*>(reinterpret_cast<const volatile uint8_t*>(addr) + off)
+
 #define RAND(min, max) (rand()%(max-min + 1) + min)
 
 // Require: bit < 32
@@ -23,6 +25,6 @@
 // Mix up the index order to prevent stride prediction
 // Require: 0 <= i <= 255
 // Can replace 173 and 17, prime numbers seem to work best
-#define MIX(_i) (((_i*173) + 17) & 255)
+#define MIX(_i) (((_i*167) + 13) & 255)
 
 #endif //CACHECASH_UTILS_H
