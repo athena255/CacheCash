@@ -38,10 +38,10 @@ public:
 
     // Read n_bytes from p_secret and write it to p_buf
     // Require: At least n_bytes allocated from p_buf
-    volatile void read(const volatile void *p_secret, size_t n_bytes, uint8_t *p_buf);
+    volatile void read( void volatile * const p_secret, size_t n_bytes, uint8_t *p_buf);
 
     // Read a byte from p_secret into p_val
-    volatile void read_byte(const volatile void *p_secret, uint8_t *p_val);
+    volatile void read_byte( void volatile * const p_secret, uint8_t *p_val);
 
 private:
     void do_attack(size_t train_x, size_t mal_x);
@@ -49,8 +49,8 @@ private:
     void find_hits(size_t train_x);
     uint8_t volatile * const p_base;                // pointer to the base address from which we calc secret
     uint8_t volatile * const p_scratchpad;          // probe array
-    std::function<volatile void(volatile size_t)> fn_vuln;
-    std::function<volatile size_t(volatile size_t)> fn_get_trainx;
+    std::function<volatile void(volatile size_t)> const fn_vuln;
+    std::function<volatile size_t(volatile size_t)> const fn_get_trainx;
     const size_t block_len;
     const size_t n_max_tries;
     const int n_trainings;

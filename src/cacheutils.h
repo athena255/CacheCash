@@ -5,7 +5,7 @@
 #ifndef CACHECASH_CACHEUTILS_H
 #define CACHECASH_CACHEUTILS_H
 
-inline volatile uint64_t load(const volatile void* mem)
+inline volatile uint64_t load(void volatile * const mem)
 {
     volatile uint64_t diff;
 //    __asm__ volatile(
@@ -32,7 +32,7 @@ inline volatile uint64_t load(const volatile void* mem)
     return diff;
 }
 
-inline volatile uint64_t flush(const volatile void* mem)
+inline volatile uint64_t flush(void volatile * const mem)
 {
     volatile uint64_t diff;
     __asm__ volatile(
