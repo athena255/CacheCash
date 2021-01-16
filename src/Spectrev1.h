@@ -17,10 +17,10 @@ class Spectrev1 {
 public:
 
     inline Spectrev1(
-            uint8_t *p_base,
-            uint8_t  *p_scratchpad,
-            std::function<volatile void(volatile size_t)> &&fn_vuln,
-            std::function<volatile size_t(volatile size_t)> &&fn_get_trainx,
+            uint8_t * const p_base,
+            uint8_t * const p_scratchpad,
+            std::function<void(size_t)> &&fn_vuln,
+            std::function<size_t(size_t)> &&fn_get_trainx,
             size_t block_len,
             size_t n_max_tries,
             int n_trainings)
@@ -44,11 +44,11 @@ public:
     volatile void read_byte(const volatile void *p_secret, uint8_t *p_val);
 
 private:
-    volatile void do_attack(size_t train_x, size_t mal_x);
-    volatile void mistrain(size_t train_x, size_t mal_x);
-    volatile void find_hits(size_t train_x);
-    volatile uint8_t *p_base;                // pointer to the base address from which we calc secret
-    volatile uint8_t *p_scratchpad;          // probe array
+    void do_attack(size_t train_x, size_t mal_x);
+    void mistrain(size_t train_x, size_t mal_x);
+    void find_hits(size_t train_x);
+    uint8_t volatile * const p_base;                // pointer to the base address from which we calc secret
+    uint8_t volatile * const p_scratchpad;          // probe array
     std::function<volatile void(volatile size_t)> fn_vuln;
     std::function<volatile size_t(volatile size_t)> fn_get_trainx;
     const size_t block_len;
