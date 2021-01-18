@@ -12,10 +12,9 @@ uint8_t unused[64]; // seperate by a cacheline
 uint8_t array1[160] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
 uint8_t unused2[64]; // seperate by a cacheline
 uint8_t array2[MAX_BYTE*64];
-// Whether secret is const char* or just char* matters
-
-// Want to test how this handles similar patterns, so 'khd' is 'lie' offset by 1 char
-const char* secret = "The cake is a lie! The cake is a khd!";
+// If the bytes of secret are less than 16, then we will have trouble reading it
+// because these are legitimate values of array1
+uint8_t secret[25] = {0xde, 0xad, 0xbe, 0xef, 0x69};
 
 volatile uint8_t get_elem(size_t x)
 {
@@ -35,16 +34,16 @@ TEST_CASE("Spectrev1", "[branch]")
                 [](volatile size_t x){flush(&array1_size); get_elem(x);},
                 [](size_t _t){return _t%array1_size;},
                 64,
-                MAX_TRIES,
+                MAX_TRIES/8,
                 20
     );
 
     uint8_t val;
-    for (size_t i = 0; i < 37; ++i)
+    for (size_t i = 0; i < 5; ++i)
     {
-        s.read_byte(CVMEM_ADD(const_cast<char*>(secret), i), &val);
+        s.read_byte(&secret[i], &val);
         REQUIRE(val == secret[i]);
-        printf("0x%02X = %c\n", val, val);
+        printf("0x%02X\n", val);
     }
 
 }

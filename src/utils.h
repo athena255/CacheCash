@@ -5,7 +5,7 @@
 #ifndef CACHECASH_UTILS_H
 #define CACHECASH_UTILS_H
 
-#define ERR(msg) do{std::cerr << msg << std::endl;}while(0);
+#define ERR(msg) do {perror(msg); exit(EXIT_FAILURE);} while(0)
 #ifdef _DEBUG
 #define D(msg) do{std::cout << msg << std::endl;}while(0);
 #else
@@ -13,6 +13,7 @@
 #endif
 #define MEM_ADD(addr, off) reinterpret_cast<void*>(reinterpret_cast<uint8_t*>(addr) + off)
 #define CVMEM_ADD(addr, off) reinterpret_cast<void volatile * const>(reinterpret_cast<uint8_t volatile * const>(addr) + off)
+#define PTR_ADD(type, mem, off) reinterpret_cast<type>(reinterpret_cast<uint8_t const*>(mem) + (off))
 
 #define RAND(min, max) (rand()%(max-min + 1) + min)
 

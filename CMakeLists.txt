@@ -38,10 +38,22 @@ add_executable(Spectrev1_tests
         src/Spectrev1.cpp
         tests/test_specv1.cpp)
 
+add_executable(Spec1Victim
+        tests/spectre1victim.cpp)
+
+add_executable(Spec1Attack
+        tests/spectre1attack.cpp
+        src/cpu_info.cpp
+        src/cacheutils.cpp
+        src/Spectrev1.cpp
+        src/lilelf.cpp)
+
 target_link_libraries(CPUFeatures_tests PRIVATE Catch2::Catch2)
 target_link_libraries(Cache_tests PRIVATE Catch2::Catch2)
 target_link_libraries(Spectrev1_orig_tests PRIVATE Catch2::Catch2)
 target_link_libraries(Spectrev1_tests PRIVATE Catch2::Catch2)
+
+#target_link_libraries(Spec1Attack PUBLIC libelf.a)
 
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Ofast")
 SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Ofast")

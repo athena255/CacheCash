@@ -39,7 +39,7 @@ inline volatile uint64_t flush(void volatile * const mem)
             "mfence;"               // ensure all stores included in the cache line are flushed
             "rdtscp;"
             "movl %%eax, %%esi;"
-            "clflush 0 (%%rdi);"
+            "clflushopt (%%rdi);"
 //            "mfence;"               // avoid invalidating prefetched cache lines
             "rdtscp;"
             "subl %%esi, %%eax;"

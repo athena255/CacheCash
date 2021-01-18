@@ -15,6 +15,9 @@
 
 // See tests/test_specv1.cpp for example use
 
+// block_len must be at least the cache line size; a small block_len means poor accuracy
+//      increasing n_max_tries and n_trainings can improve accuracy but will make each byte read slower
+
 class Spectrev1 {
 public:
 
@@ -35,15 +38,15 @@ public:
           n_trainings(n_trainings),
           cachelinesize(get_cachelinesize())
     {
-        get_thresh(0);
+        get_thresh(false);
     }
 
     // Read n_bytes from p_secret and write it to p_buf
     // Require: At least n_bytes allocated from p_buf
-    volatile void read( void volatile * const p_secret, size_t n_bytes, uint8_t *p_buf);
+    volatile void read( void volatile * p_secret, size_t n_bytes, uint8_t *p_buf);
 
     // Read a byte from p_secret into p_val
-    volatile void read_byte( void volatile * const p_secret, uint8_t *p_val);
+    volatile void read_byte( void volatile * p_secret, uint8_t *p_val);
 
 private:
     void do_attack(size_t train_x, size_t mal_x);
