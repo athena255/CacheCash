@@ -6,6 +6,7 @@
 #include <stdafx.h>
 #include <cacheutils.h>
 #include <Spectrev1.h>
+// gdb -batch -ex 'file CacheCash' -ex 'disassemble /r main'
 
 unsigned int array1_size = 16;
 uint8_t unused[64]; // seperate by a cacheline
