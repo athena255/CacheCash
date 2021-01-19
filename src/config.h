@@ -5,7 +5,7 @@
 #define MISS_THRESH -1
 
 // Needs to be larger than the cacheline size
-#define BLOCK_LEN 512
+//#define BLOCK_LEN 512
 
 #define MAX_TRIES 1000
 

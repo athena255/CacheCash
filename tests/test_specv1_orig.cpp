@@ -6,6 +6,7 @@
 #include <cacheutils.h>
 #include <Spectrev1.h>
 
+#define BLOCK_LEN 512
 unsigned int array1_size = 16;
 uint8_t unused[64]; // seperate by a cacheline
 uint8_t array1[160] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
@@ -40,15 +41,6 @@ volatile uint8_t get_elem(size_t x)
 //        get_elem(x);
 //    }
 //}
-
-int map(size_t i, size_t num_trainings)
-{
-    size_t x = (i % (num_trainings+1));
-    volatile uint64_t swapped;
-    asm volatile("bswap %0;" : "=R"(swapped): "R"(x));
-    x = (x - 1)/( swapped + 1);
-    return x;
-}
 
 void mistrain(int num_trainings, size_t train_x, size_t mal_x)
 {
@@ -150,9 +142,11 @@ TEST_CASE("spectrev1", "[branch]")
     }
 }
 
-TEST_CASE("mistrain", "[.branch]")
+int map(size_t i, size_t num_trainings)
 {
-    mistrain(24, 3,  0xab);
+    size_t x = (i % (num_trainings+1));
+    x = (x-1)/(x+1);
+    return x;
 }
 
 TEST_CASE("map to 1 and 0", "[.mispredict]")

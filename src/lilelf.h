@@ -9,6 +9,7 @@
 #include <unordered_map>
 #include <string>
 #include <elf.h>
+
 class LilElf{
 public:
     LilElf(const char* file_name);
@@ -43,19 +44,21 @@ public:
     }
 
     // Gets the virtual address of sym relative to data
-    inline void* get_sym_value(Elf64_Sym *sym)
+    template <typename T>
+    inline T* get_sym_value(Elf64_Sym *sym)
     {
-        return &data[sym->st_value];
+        return reinterpret_cast<T*>(&data[sym->st_value]);
     }
 
     // Gets the file offset of sym relative to data
     // This is useful for looking at initialization values
-    inline void* get_static_sym_value(Elf64_Sym *sym)
+    template <typename T>
+    inline T* get_static_sym_value(Elf64_Sym *sym)
     {
         auto p_sec = get_section(sym->st_shndx);
         // subtract sym's VA from VA of its section and then add the file offset of its
         // section
-        return &data[sym->st_value - p_sec->sh_addr + p_sec->sh_offset];
+        return reinterpret_cast<T*>(&data[sym->st_value - p_sec->sh_addr + p_sec->sh_offset]);
     }
 
     static void set_permissions(void const *addr_begin, int len, int permissions);

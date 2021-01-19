@@ -22,15 +22,15 @@ class Spectrev1 {
 public:
 
     inline Spectrev1(
-            uint8_t * const p_base,                         // base address from which we read secret
-            uint8_t * const p_scratchpad,                   // probe array (must be writeable)
+            void * const p_base,                         // base address from which we read secret
+            void * const p_scratchpad,                   // probe array (must be writeable)
             std::function<void(size_t)> &&fn_vuln,          // calls the speculative function
             std::function<size_t(size_t)> &&fn_get_trainx,  // given a size_t, returns a legal argument for fn_vuln
             size_t block_len,                               // num bytes b/w monitored lines of p_scratchpad
             size_t n_max_tries,                             // max num attempts to read secret
             int n_trainings)                                // num times to send good arg to fn_vuln before sending bad arg
-        : p_base(p_base),
-          p_scratchpad(p_scratchpad),
+        : p_base(reinterpret_cast<uint8_t * const>(p_base)),
+          p_scratchpad(reinterpret_cast<uint8_t * const>(p_scratchpad)),
           fn_vuln(fn_vuln),
           fn_get_trainx(fn_get_trainx),
           block_len(block_len),

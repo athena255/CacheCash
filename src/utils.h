@@ -15,8 +15,6 @@
 #define CVMEM_ADD(addr, off) reinterpret_cast<void volatile * const>(reinterpret_cast<uint8_t volatile * const>(addr) + off)
 #define PTR_ADD(type, mem, off) reinterpret_cast<type>(reinterpret_cast<uint8_t *>(mem) + (off))
 
-#define RAND(min, max) (rand()%(max-min + 1) + min)
-
 // Require: bit < 32
 #define RD_BIT(reg, bit)  ( (bool)( reg & (1 << bit)) )
 

@@ -23,14 +23,15 @@ uint64_t get_thresh(bool get_max_hit)
     static uint64_t min_miss = MISS_THRESH;
     if (max_hit == 0 && min_miss == -1)
     {
-        uint8_t *mem = (uint8_t*) malloc(MAX_BYTE*BLOCK_LEN);
+        auto block_len = get_cachelinesize()*8;
+        uint8_t *mem = (uint8_t*) malloc(MAX_BYTE*block_len);
         void* mem_addr;
         size_t mix_i;
         uint64_t miss_time, hit_time;
         for (volatile int i = 0; i < MAX_BYTE; ++i)
         {
             mix_i = MIX(i);
-            mem_addr = MEM_ADD(mem, mix_i*BLOCK_LEN);
+            mem_addr = MEM_ADD(mem, mix_i*block_len);
 
             if (mix_i & 1)
             {

