@@ -12,7 +12,7 @@
 
 class LilElf{
 public:
-    LilElf(const char* file_name);
+    explicit LilElf(const char* file_name);
 
     inline Elf64_Shdr *get_section(size_t section_idx)
     {
@@ -65,9 +65,9 @@ public:
 
 private:
     static void *map_file(char const *file_name);
+    static void* page_align(void const *_addr);
     void process_sections();
     void process_symtab();
-    static void* page_align(void const *_addr);
 
     uint8_t* data;
     Elf64_Ehdr *p_hdr;

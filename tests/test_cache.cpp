@@ -4,9 +4,10 @@
 #include <catch2/catch.hpp>
 #include <stdafx.h>
 #include <cacheutils.h>
-// TODO: Call get_thresh first since it tends to be weird on the first call
+
 #include <x86intrin.h>
 #include <immintrin.h>
+
 TEST_CASE ("read fs and gs", "[.read seg desc]")
 {
     // read fs base
@@ -142,7 +143,7 @@ TEST_CASE("invd", "[.cache]")
     // may or may not include lower level caches associated with another processor that shares
     // any level of this processor's cache hierarchy
     // should work as long as the thing is not in L3
-//    asm volatile("wbinvd");
+    asm volatile("wbinvd");
 }
 
 TEST_CASE("prefetch", "[cache]")

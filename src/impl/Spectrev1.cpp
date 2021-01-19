@@ -24,7 +24,7 @@ volatile void Spectrev1::read_byte( void volatile * const p_secret, uint8_t *p_v
     {
         do_attack(fn_get_trainx(tries), mal_x);
 
-        if ( (results[high] == 2 && results[high2] == 0) || (results[high] >= (2*results[high2] + 5)) )
+        if ( (results[high] == 2 && results[high2] == 0) || (results[high] >= (2*results[high2] + n_trainings)) )
         {
             break;
         }

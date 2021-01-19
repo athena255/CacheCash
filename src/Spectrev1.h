@@ -41,6 +41,9 @@ public:
         get_thresh(false);
     }
 
+    Spectrev1(Spectrev1 const &) = delete;
+    Spectrev1 & operator=(Spectrev1 const &) = delete;
+
     // Read n_bytes from p_secret and write it to p_buf
     // Require: At least n_bytes allocated from p_buf
     volatile void read( void volatile * p_secret, size_t n_bytes, uint8_t *p_buf);
