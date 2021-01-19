@@ -40,12 +40,13 @@ inline volatile uint64_t flush(void volatile * const mem)
             "rdtscp;"
             "movl %%eax, %%esi;"
             "clflushopt (%%rdi);"
-//            "mfence;"               // avoid invalidating prefetched cache lines
+            "mfence;"               // avoid invalidating prefetched cache lines
             "rdtscp;"
             "subl %%esi, %%eax;"
             : "=a"(diff)
             : "D"(mem)
             : "%esi", "%rcx", "%rdx");
+
     return diff;
 }
 

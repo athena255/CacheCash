@@ -49,6 +49,12 @@ int main()
         array2[i*_BLOCK_LEN] = i;
     }
 
+    // Make sure array2 is backed
+    for (auto i = 0; i < _BLOCK_LEN*256; i += 4096)
+    {
+        array2[i] = 1;
+    }
+
     // Read from stdin
     size_t user_input;
     while(true)

