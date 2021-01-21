@@ -24,13 +24,13 @@ void * LilElf::map_file(char const *file_name)
 {
     auto fd = open(file_name, O_RDONLY, 0);
     if (fd < 0)
-        perror("Failed to open file");
+        ERR("[!] Failed to open file");
 
     struct stat buf{};
     stat(file_name, &buf);
     void *seg = mmap(0, buf.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
     if (seg == MAP_FAILED)
-        perror("Failed to map victim file");
+        ERR("[!] Failed to map victim file");
     close(fd);
 
     return seg;
@@ -64,10 +64,19 @@ void LilElf::process_sections()
 void LilElf::process_symtab()
 {
     Elf64_Sym *p_sym;
+    const char *key;
     for (auto i = 0; i < p_sym_hdr->sh_size/sizeof(Elf64_Sym); ++i)
     {
         p_sym = get_sym(i);
-        symtab[get_str(p_sym->st_name)] = p_sym;
+        key = get_str(p_sym->st_name);
+        if (symtab.count(key) == 0)
+        {
+            symtab[key] = p_sym;
+        }
+//        else
+//        {
+//            D("[!] multiple symbols present: " << key)
+//        }
 //            printf("%s\n\tstr_idx: %d, sym_val: %p, size: %d, section_idx: %d, st_info %d\n",
 //                   get_str(p_sym->st_name) , p_sym->st_name, p_sym->st_value, p_sym->st_size, p_sym->st_shndx, p_sym->st_info);
     }
@@ -78,7 +87,7 @@ void LilElf::set_permissions(void const *addr_begin, int len, int permissions)
     auto aligned_start = page_align(addr_begin);
     auto aligned_len = reinterpret_cast<uint8_t const*>(addr_begin) + len - reinterpret_cast<uint8_t*>(aligned_start);
     if (mprotect(aligned_start, aligned_len, permissions) == -1)
-        ERR("mprotect failed");
+        ERR("[!] mprotect failed");
 }
 
 void* LilElf::page_align(void const *_addr)

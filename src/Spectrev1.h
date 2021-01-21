@@ -64,8 +64,8 @@ private:
     const int n_trainings;
 
     // Index of the two blocks (p_scratchpad + high*block_len) with the highest number of hits
-    uint8_t high;
-    uint8_t high2;
+    int16_t high;
+    int16_t high2;
 
     const size_t cachelinesize;
 

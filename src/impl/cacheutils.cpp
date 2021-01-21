@@ -47,7 +47,7 @@ uint64_t get_thresh(bool get_max_hit)
             }
         }
         free(mem);
-        D("max_hit: " << max_hit << " min_miss " << min_miss);
+        D("[*] max_hit: " << max_hit << " min_miss " << min_miss);
         if (max_hit >= min_miss)
             ERR("cannot differentiate between hits and misses");
     }

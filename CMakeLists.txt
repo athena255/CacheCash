@@ -42,10 +42,15 @@ add_executable(Spectrev1_tests
         tests/test_main.cpp
         tests/test_specv1.cpp)
 
+add_executable(Pipes_tests
+        tests/test_main.cpp
+        tests/test_pipes.cpp)
+
 target_link_libraries(CPUFeatures_tests PRIVATE Catch2::Catch2)
 target_link_libraries(Cache_tests PRIVATE Catch2::Catch2)
 target_link_libraries(Spectrev1_orig_tests PRIVATE Catch2::Catch2)
 target_link_libraries(Spectrev1_tests PRIVATE Catch2::Catch2)
+target_link_libraries(Pipes_tests PRIVATE Catch2::Catch2)
 
 #target_link_libraries(Spec1Attack PUBLIC libelf.a)
 

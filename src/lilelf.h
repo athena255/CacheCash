@@ -18,7 +18,7 @@ public:
     {
         if (section_idx > p_hdr->e_shnum)
         {
-            ERR("Bad section idx");
+            ERR("[!] Bad section idx");
         }
         return PTR_ADD(Elf64_Shdr*, data, p_hdr->e_shoff + section_idx*p_hdr->e_shentsize);
     }
@@ -26,7 +26,7 @@ public:
     {
         if (sym_idx > p_sym_hdr->sh_size/sizeof(Elf64_Sym))
         {
-            ERR("Bad symbol idx");
+            ERR("[!] Bad symbol idx");
         }
         return PTR_ADD(Elf64_Sym*, data,p_sym_hdr->sh_offset + sym_idx*sizeof(Elf64_Sym));
     }
@@ -34,7 +34,7 @@ public:
     {
         if (str_idx > p_str_hdr->sh_size)
         {
-            ERR("Bad string idx");
+            ERR("[!] Bad string idx");
         }
         return PTR_ADD(const char *, data,p_str_hdr->sh_offset + str_idx);
     }
