@@ -3,25 +3,31 @@
 //
 // Victim test program for reading secret from another process
 
-#include <random>
+#include <cstdio>
+#include <cstdlib>
 #include <cstdint>
+#include <ctime>
 
 #define _SECRET_LEN 25
 #define _BLOCK_LEN 512
+//#define _DEBUG
 
 unsigned int array1_size = 16;
-uint8_t unused[64]; // seperate by a cacheline
+// [??] Initializing the unused* to something value makes the attack work better
+uint8_t unused[64] = {3};
 uint8_t array1[160] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
-uint8_t unused2[64]; // seperate by a cacheline
-volatile uint8_t *array2;
+uint8_t unused1[64];
+uint8_t array2[256*_BLOCK_LEN];
+uint8_t unused2[64];
 
-uint8_t secret[_SECRET_LEN] = {1, 2, 1, 2, 3, 69};
+// [??] Not initializing secret to anything seems to make the attack work better
+uint8_t secret[_SECRET_LEN];
 
 volatile uint8_t get_elem(size_t x)
 {
     // Make this volatile or compiler might optimize out
     volatile uint8_t res = -1;
-    if (x < array1_size)
+    if (x < array1_size )
     {
         res = array2[array1[x]*_BLOCK_LEN];
     }
@@ -30,24 +36,25 @@ volatile uint8_t get_elem(size_t x)
 
 int main()
 {
+    // [??] Calling srand(time(0)) seems to make the attack work better
     srand(time(0));
 
-    // Allocate for array2
-    array2 = (uint8_t*)malloc(256*_BLOCK_LEN);
-
-    // Generate secret
+    // Generate secret and print it
     for (int i = 0; i < sizeof(secret); ++i)
     {
         secret[i] = rand();
         printf("%02x ", secret[i]);
     }
-
     printf("\n");
-    // Write some stuff in array2
+
+#ifdef _DEBUG
+    // Populate array2 with something interesting
     for (int i = 0; i < 16; ++i)
     {
         array2[i*_BLOCK_LEN] = i;
     }
+    size_t counter = 0;
+#endif
 
     // Make sure array2 is backed
     for (auto i = 0; i < _BLOCK_LEN*256; i += 4096)
@@ -57,10 +64,13 @@ int main()
 
     // Read from stdin
     size_t user_input;
-    while(true)
+    while(scanf("%llu", &user_input) != EOF)
     {
-        scanf("%lu", &user_input);
-        printf("--> 0x%02x\n", get_elem(user_input));
+#ifdef _DEBUG
+        printf("[%llu] %llu --> 0x%02x\n", time(0), counter++, get_elem(user_input));
+#else
+        get_elem(user_input);
+#endif
     }
 
 }

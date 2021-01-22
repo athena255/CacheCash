@@ -4,6 +4,8 @@
 #include <catch2/catch.hpp>
 #include <stdafx.h>
 #include <unistd.h>
+#include <wait.h>
+#include <cstdio>
 
 #define READ 0
 #define WRITE 1
@@ -40,7 +42,10 @@ TEST_CASE("parent receive from child", "[.pipes]")
     {
         // Child wants to send data
         close(fd[READ]);
-        write(fd[WRITE], msg, strlen(msg)+1);
+        FILE *s = fdopen(fd[WRITE], "w");
+        fprintf(s, "%s", msg);
+        fflush(s);
+//        write(fd[WRITE], msg, strlen(msg)+1);
         close(fd[WRITE]);
     }
     else
@@ -49,7 +54,7 @@ TEST_CASE("parent receive from child", "[.pipes]")
         close(fd[WRITE]);
         char buf[128];
         auto n_bytes = read(fd[READ], buf, sizeof(buf));
-        REQUIRE(n_bytes == strlen(msg)+1);
+        REQUIRE(n_bytes == strlen(msg));
         close(fd[READ]);
     }
 }
@@ -80,7 +85,7 @@ TEST_CASE("child receive from parent", "[.pipes]")
     }
 }
 
-TEST_CASE("parent into child stdin", "[pipes]")
+TEST_CASE("parent into child stdin", "[.pipes]")
 {
 
     auto out_fp = popen("./Spec1Victim", "w");
@@ -89,4 +94,49 @@ TEST_CASE("parent into child stdin", "[pipes]")
     pclose(out_fp);
 }
 
+TEST_CASE("duplex", "[pipes]")
+{
+    pid_t child;
+    int fd[2];
+    int tx[2];
+    pipe(fd);
+    pipe(tx);
 
+    child = fork();
+    if (child == 0)
+    {
+        // Child wants to send data
+        close(STDOUT_FILENO);
+        dup(fd[WRITE]);
+
+        close(STDIN_FILENO);
+        dup(tx[READ]);
+
+        close(fd[READ]);
+        close(tx[WRITE]);
+        close(tx[READ]);
+        close(fd[WRITE]);
+        execlp("./Spec1Victim", NULL, NULL);
+
+    }
+    else
+    {
+        // Parent wants to receive data
+        close(fd[WRITE]);
+        char buf[0x100];
+
+        close(tx[READ]);
+        FILE *in_stream = fdopen(tx[WRITE], "w");
+        fprintf(in_stream, "%llu\n", 1);
+        fflush(in_stream);
+
+        write(tx[WRITE], "2\n", 2);
+        write(tx[WRITE], "3\n", 2);
+
+        close(tx[WRITE]);
+        read(fd[READ], buf, sizeof(buf));
+
+        printf("this: %s !", buf);
+        close(fd[READ]);
+    }
+}

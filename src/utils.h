@@ -34,30 +34,31 @@ static inline void * map_file(char const *file_name, size_t *n_bytes)
 
     struct stat buf{};
     stat(file_name, &buf);
-    void *seg = mmap(0, buf.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
-    if (seg == MAP_FAILED)
-        ERR("[!] Failed to map file");
+    void *seg = mmap(NULL, buf.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
     close(fd);
 
-    *n_bytes = buf.st_size;
+    if (seg == MAP_FAILED)
+        ERR("[!] Failed to map file");
 
+    *n_bytes = buf.st_size;
 
     return seg;
 }
 
-static inline void* page_align(void const *_addr)
+template <typename T>
+static inline T page_align(T _addr)
 {
-    auto addr       = reinterpret_cast<unsigned long>(_addr);
+    auto addr       = reinterpret_cast<uint64_t>(_addr);
     auto pagesize   = sysconf(_SC_PAGE_SIZE);
     auto offset     = addr % pagesize;
 
-    return reinterpret_cast<void*>(addr - offset);
+    return reinterpret_cast<T>(addr - offset);
 }
 
 static inline void set_permissions(void const *addr_begin, int len, int permissions)
 {
-    auto aligned_start = page_align(addr_begin);
-    auto aligned_len = reinterpret_cast<uint8_t const*>(addr_begin) + len - reinterpret_cast<uint8_t*>(aligned_start);
+    auto aligned_start = const_cast<void*>(page_align(addr_begin));
+    auto aligned_len = reinterpret_cast<uint8_t const*>(addr_begin) + len - reinterpret_cast<const uint8_t*>(aligned_start);
     if (mprotect(aligned_start, aligned_len, permissions) == -1)
         ERR("[!] mprotect failed");
 }
