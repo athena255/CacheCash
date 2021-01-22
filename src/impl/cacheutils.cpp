@@ -23,7 +23,7 @@ uint64_t get_thresh(bool get_max_hit)
     static uint64_t min_miss = MISS_THRESH;
     if (max_hit == 0 && min_miss == -1)
     {
-        auto block_len = get_cachelinesize()*8;
+        uint64_t block_len = get_cachelinesize()*8;
         auto mem = mmap(NULL, MAX_BYTE*block_len, PROT_READ, MAP_ANON | MAP_PRIVATE, -1, 0);
 
         void* mem_addr;
@@ -34,18 +34,13 @@ uint64_t get_thresh(bool get_max_hit)
             mix_i = MIX(i);
             mem_addr = MEM_ADD(mem, mix_i*block_len);
 
-            if (mix_i & 1)
-            {
-                flush(mem_addr);
-                miss_time = load(mem_addr);
-                min_miss = (min_miss < miss_time) ? min_miss : miss_time;
-            }
-            else
-            {
-                load(mem_addr);
-                hit_time = load(mem_addr);
-                max_hit = (max_hit > hit_time) ? max_hit : hit_time;
-            }
+            flush(mem_addr);
+            miss_time = load(mem_addr);
+            min_miss = (min_miss < miss_time) ? min_miss : miss_time;
+
+            hit_time = load(mem_addr);
+            max_hit = (max_hit > hit_time) ? max_hit : hit_time;
+
         }
         munmap(mem, MAX_BYTE*block_len);
         D("[*] max_hit: " << max_hit << " min_miss " << min_miss);

@@ -37,7 +37,9 @@ public:
           n_max_tries(n_max_tries),
           n_trainings(n_trainings),
           cachelinesize(get_cachelinesize())
-    {}
+    {
+        get_thresh(false);
+    }
 
     Spectrev1(Spectrev1 const &) = delete;
     Spectrev1 & operator=(Spectrev1 const &) = delete;
