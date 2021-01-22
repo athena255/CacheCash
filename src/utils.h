@@ -26,4 +26,38 @@
 // Can replace 173 and 17, prime numbers seem to work best
 #define MIX(_i) (((_i*167) + 11) & 255)
 
+static inline void * map_file(char const *file_name)
+{
+    auto fd = open(file_name, O_RDONLY, 0);
+    if (fd < 0)
+        ERR("[!] Failed to open file");
+
+    struct stat buf{};
+    stat(file_name, &buf);
+    void *seg = mmap(0, buf.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
+    if (seg == MAP_FAILED)
+        ERR("[!] Failed to map file");
+    close(fd);
+
+    return seg;
+}
+
+static inline void* page_align(void const *_addr)
+{
+    auto addr       = reinterpret_cast<unsigned long>(_addr);
+    auto pagesize   = sysconf(_SC_PAGE_SIZE);
+    auto offset     = addr % pagesize;
+
+    return reinterpret_cast<void*>(addr - offset);
+}
+
+static inline void set_permissions(void const *addr_begin, int len, int permissions)
+{
+    auto aligned_start = page_align(addr_begin);
+    auto aligned_len = reinterpret_cast<uint8_t const*>(addr_begin) + len - reinterpret_cast<uint8_t*>(aligned_start);
+    if (mprotect(aligned_start, aligned_len, permissions) == -1)
+        ERR("[!] mprotect failed");
+}
+
+
 #endif //CACHECASH_UTILS_H

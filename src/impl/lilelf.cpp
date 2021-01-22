@@ -1,37 +1,19 @@
 //
 // Created by sage on 1/17/21.
 //
-#include <sys/stat.h>
-#include <fcntl.h>
 #include <lilelf.h>
 
 LilElf::LilElf(const char* file_name)
-        : data(reinterpret_cast<uint8_t*>(LilElf::map_file(file_name))),
+        : data(reinterpret_cast<uint8_t*>(map_file(file_name))),
           p_hdr{},
           p_dynsym_hdr{},
           p_sym_hdr{},
           p_str_hdr{}
 {
     p_hdr = reinterpret_cast<Elf64_Ehdr*>(data);
-    p_str_hdr = get_section(p_hdr->e_shstrndx-1); // TODO: ???
+    p_str_hdr = get_section(p_hdr->e_shstrndx-1); // TODO: why is this -1?
     process_sections();
     process_symtab();
-}
-
-void * LilElf::map_file(char const *file_name)
-{
-    auto fd = open(file_name, O_RDONLY, 0);
-    if (fd < 0)
-        ERR("[!] Failed to open file");
-
-    struct stat buf{};
-    stat(file_name, &buf);
-    void *seg = mmap(0, buf.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
-    if (seg == MAP_FAILED)
-        ERR("[!] Failed to map victim file");
-    close(fd);
-
-    return seg;
 }
 
 void LilElf::process_sections()
@@ -80,19 +62,3 @@ void LilElf::process_symtab()
     }
 }
 
-void LilElf::set_permissions(void const *addr_begin, int len, int permissions)
-{
-    auto aligned_start = page_align(addr_begin);
-    auto aligned_len = reinterpret_cast<uint8_t const*>(addr_begin) + len - reinterpret_cast<uint8_t*>(aligned_start);
-    if (mprotect(aligned_start, aligned_len, permissions) == -1)
-        ERR("[!] mprotect failed");
-}
-
-void* LilElf::page_align(void const *_addr)
-{
-    auto addr       = reinterpret_cast<unsigned long>(_addr);
-    auto pagesize   = sysconf(_SC_PAGE_SIZE);
-    auto offset     = addr % pagesize;
-
-    return reinterpret_cast<void*>(addr - offset);
-}

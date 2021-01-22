@@ -61,11 +61,7 @@ public:
         return reinterpret_cast<T*>(&data[sym->st_value - p_sec->sh_addr + p_sec->sh_offset]);
     }
 
-    static void set_permissions(void const *addr_begin, int len, int permissions);
-
 private:
-    static void *map_file(char const *file_name);
-    static void* page_align(void const *_addr);
     void process_sections();
     void process_symtab();
 

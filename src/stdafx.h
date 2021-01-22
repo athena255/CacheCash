@@ -6,12 +6,14 @@
 #define CACHECASH_STDAFX_H
 
 #include <cpuid.h>
+#include <sys/mman.h>
+#include <unistd.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
 #include <cstring>
 #include <iostream>
 #include <vector>
-
-#include <sys/mman.h>
-#include <unistd.h>
 
 #include <config.h>
 #include <utils.h>
