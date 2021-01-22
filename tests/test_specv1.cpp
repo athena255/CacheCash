@@ -9,6 +9,8 @@
 // gdb -batch -ex 'file CacheCash' -ex 'disassemble /r main'
 
 #define BLOCK_LEN 64
+#define PAGE_SIZE 4096
+#define MAX_TRIES 1000
 
 unsigned int array1_size = 16;
 uint8_t unused[64]; // seperate by a cacheline

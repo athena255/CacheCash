@@ -11,6 +11,7 @@
 #include <vector>
 
 #include <sys/mman.h>
+#include <unistd.h>
 
 #include <config.h>
 #include <utils.h>

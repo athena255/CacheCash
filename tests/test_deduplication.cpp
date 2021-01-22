@@ -44,7 +44,6 @@ SCENARIO("hardware should deduplicate same images", "[dedup]")
                 std::cout << "latency " << latency << std::endl;
                 REQUIRE(!is_miss(latency));
                 REQUIRE(is_hit(latency));
-//                REQUIRE(is_hit(load(m_sym2)));
             }
         }
 
