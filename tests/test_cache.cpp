@@ -6,7 +6,6 @@
 #include <cacheutils.h>
 
 #include <x86intrin.h>
-#include <immintrin.h>
 
 TEST_CASE ("read fs and gs", "[.read seg desc]")
 {

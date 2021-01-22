@@ -13,6 +13,7 @@
 class LilElf{
 public:
     explicit LilElf(const char* file_name);
+    ~LilElf();
 
     inline Elf64_Shdr *get_section(size_t section_idx)
     {
@@ -66,6 +67,7 @@ private:
     void process_symtab();
 
     uint8_t* data;
+    size_t data_size;
     Elf64_Ehdr *p_hdr;
     Elf64_Shdr *p_dynsym_hdr;
     Elf64_Shdr *p_sym_hdr;

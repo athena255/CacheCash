@@ -4,16 +4,26 @@
 #include <lilelf.h>
 
 LilElf::LilElf(const char* file_name)
-        : data(reinterpret_cast<uint8_t*>(map_file(file_name))),
-          p_hdr{},
-          p_dynsym_hdr{},
-          p_sym_hdr{},
-          p_str_hdr{}
+        : p_dynsym_hdr{},
+          p_sym_hdr{}
 {
+    data = reinterpret_cast<uint8_t*>(map_file(file_name, &data_size));
     p_hdr = reinterpret_cast<Elf64_Ehdr*>(data);
     p_str_hdr = get_section(p_hdr->e_shstrndx-1); // TODO: why is this -1?
     process_sections();
     process_symtab();
+}
+
+LilElf::~LilElf()
+{
+    symtab.clear();
+    munmap(data, data_size);
+    data_size = 0;
+    data = nullptr;
+    p_hdr = nullptr;
+    p_str_hdr = nullptr;
+    p_dynsym_hdr = nullptr;
+    p_sym_hdr = nullptr;
 }
 
 void LilElf::process_sections()

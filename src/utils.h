@@ -26,7 +26,7 @@
 // Can replace 173 and 17, prime numbers seem to work best
 #define MIX(_i) (((_i*167) + 11) & 255)
 
-static inline void * map_file(char const *file_name)
+static inline void * map_file(char const *file_name, size_t *n_bytes)
 {
     auto fd = open(file_name, O_RDONLY, 0);
     if (fd < 0)
@@ -38,6 +38,9 @@ static inline void * map_file(char const *file_name)
     if (seg == MAP_FAILED)
         ERR("[!] Failed to map file");
     close(fd);
+
+    *n_bytes = buf.st_size;
+
 
     return seg;
 }
