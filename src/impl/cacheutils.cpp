@@ -24,7 +24,8 @@ uint64_t get_thresh(bool get_max_hit)
     if (max_hit == 0 && min_miss == -1)
     {
         auto block_len = get_cachelinesize()*8;
-        uint8_t *mem = (uint8_t*) malloc(MAX_BYTE*block_len);
+        auto mem = mmap(NULL, MAX_BYTE*block_len, PROT_READ, MAP_ANON | MAP_PRIVATE, -1, 0);
+
         void* mem_addr;
         size_t mix_i;
         uint64_t miss_time, hit_time;
@@ -46,7 +47,7 @@ uint64_t get_thresh(bool get_max_hit)
                 max_hit = (max_hit > hit_time) ? max_hit : hit_time;
             }
         }
-        free(mem);
+        munmap(mem, MAX_BYTE*block_len);
         D("[*] max_hit: " << max_hit << " min_miss " << min_miss);
         if (max_hit >= min_miss)
             ERR("cannot differentiate between hits and misses");

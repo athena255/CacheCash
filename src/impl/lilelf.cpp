@@ -4,7 +4,6 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include <sys/mman.h>
 #include <lilelf.h>
 
 LilElf::LilElf(const char* file_name)

@@ -10,6 +10,8 @@
 #include <iostream>
 #include <vector>
 
+#include <sys/mman.h>
+
 #include <config.h>
 #include <utils.h>
 

@@ -8,14 +8,15 @@
 #include <Spectrev1.h>
 // gdb -batch -ex 'file CacheCash' -ex 'disassemble /r main'
 
-#define BLOCK_LEN 256
+#define BLOCK_LEN 64
 
 unsigned int array1_size = 16;
 uint8_t unused[64]; // seperate by a cacheline
 uint8_t array1[160] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
-uint8_t *array2;
-
-uint8_t secret[25] = {0xde, 0xad, 0xbe, 0xef, 0x69, 'T', 'h', 'e', ' ', 'c', 'a', 'k', 'e'};
+uint8_t unused1[64]; // seperate by a cacheline
+uint8_t array2[MAX_BYTE*BLOCK_LEN];
+uint8_t unused2[64] = {3};
+uint8_t secret[25] = {0xff, 0xfe, 0xfd, 0xde, 0xad, 0xbe, 0xef, 0x69, 'T', 'h', 'e', ' ', 'c', 'a', 'k', 'e'};
 
 volatile uint8_t get_elem(size_t x)
 {
@@ -30,7 +31,7 @@ volatile uint8_t get_elem(size_t x)
 
 TEST_CASE("Spectrev1", "[spectre1]")
 {
-    array2 = (uint8_t*)malloc(MAX_BYTE*BLOCK_LEN);
+
     Spectrev1 s(array1,
                 array2,
                 [](volatile size_t x){flush(&array1_size); get_elem(x);},
@@ -49,9 +50,7 @@ TEST_CASE("Spectrev1", "[spectre1]")
     for (size_t i = 0; i < 25; ++i)
     {
         s.read_byte(&secret[i], &val);
-        printf("0x%02X\n", val);
         REQUIRE(val == secret[i]);
     }
 
-    free(array2);
 }

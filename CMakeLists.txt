@@ -46,11 +46,19 @@ add_executable(Pipes_tests
         tests/test_main.cpp
         tests/test_pipes.cpp)
 
+add_executable(Dedup_tests
+        src/impl/lilelf.cpp
+        src/impl/cpu_info.cpp
+        src/impl/cacheutils.cpp
+        tests/test_main.cpp
+        tests/test_deduplication.cpp)
+
 target_link_libraries(CPUFeatures_tests PRIVATE Catch2::Catch2)
 target_link_libraries(Cache_tests PRIVATE Catch2::Catch2)
 target_link_libraries(Spectrev1_orig_tests PRIVATE Catch2::Catch2)
 target_link_libraries(Spectrev1_tests PRIVATE Catch2::Catch2)
 target_link_libraries(Pipes_tests PRIVATE Catch2::Catch2)
+target_link_libraries(Dedup_tests PRIVATE Catch2::Catch2)
 
 #target_link_libraries(Spec1Attack PUBLIC libelf.a)
 
