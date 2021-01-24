@@ -3,6 +3,7 @@
 //
 #include <stdafx.h>
 #include <cacheutils.h>
+#include <iostream>
 
 const unsigned int array1_size = 16;
 uint8_t unused[64] = {3};
@@ -32,6 +33,7 @@ int main()
     std::vector<int> times;
     size_t user_input;
     uint64_t load_time;
+    
     while(std::cin >> user_input && user_input != EOF)
     {
 //        get_elem(user_input);

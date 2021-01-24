@@ -43,7 +43,7 @@ uint64_t get_thresh(bool get_max_hit)
 
         }
         munmap(mem, MAX_BYTE*block_len);
-        D("[*] max_hit: " << max_hit << " min_miss " << min_miss);
+        D("[*] max_hit: %llu min_miss: %llu\n", max_hit, min_miss);
         if (max_hit >= min_miss)
             ERR("[!] cannot differentiate between hits and misses (max_hit %llu) (min_hit %llu)", max_hit, min_miss);
     }

@@ -3,9 +3,7 @@
 //
 #include <catch2/catch.hpp>
 #include <stdafx.h>
-#include <unistd.h>
 #include <wait.h>
-#include <cstdio>
 
 #define READ 0
 #define WRITE 1
@@ -135,7 +133,7 @@ TEST_CASE("duplex", "[pipes]")
 
         close(tx[WRITE]);
         read(fd[READ], buf, sizeof(buf));
-
+        wait(0);
         printf("this: %s !", buf);
         close(fd[READ]);
     }

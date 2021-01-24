@@ -4,7 +4,10 @@
 
 #ifndef CACHECASH_DUPLEXPIPE_H
 #define CACHECASH_DUPLEXPIPE_H
+
 #include <poll.h>
+#include <cstdarg>
+
 class DuplexPipe
 {
 public:
@@ -89,7 +92,7 @@ public:
     {
         auto n_bytes = read(rx[READ], rx_buf, BUF_SIZE-1);
         rx_buf[n_bytes] = 0;
-        D(rx_buf);
+        D("%s", rx_buf);
         clear_rx();
     }
 
@@ -101,7 +104,7 @@ public:
         {
             n_bytes = read(rx[READ], rx_buf, BUF_SIZE-1);
             rx_buf[n_bytes] = 0;
-            D(rx_buf);
+            D("%s", rx_buf);
         }
     }
 

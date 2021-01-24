@@ -30,7 +30,7 @@ TEST_CASE("hardware should deduplicate same images", "[.dedup]")
     {
         // Then array1_size should be flushed for victim2
         auto latency = load(m_sym2);
-        std::cout << "latency " << latency << std::endl;
+        D("latency %llu", latency);
         REQUIRE(is_miss(latency));
         REQUIRE(!is_hit(latency));
     }
@@ -39,7 +39,7 @@ TEST_CASE("hardware should deduplicate same images", "[.dedup]")
     // Then array1_size should also be loaded for victim1
     {
         auto latency2 = load(m_sym1);
-        std::cout << "latency " << latency2 << std::endl;
+        D("latency2 %llu", latency2);
         REQUIRE(!is_miss(latency2));
         REQUIRE(is_hit(latency2));
     }

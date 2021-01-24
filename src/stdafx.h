@@ -5,15 +5,17 @@
 #ifndef CACHECASH_STDAFX_H
 #define CACHECASH_STDAFX_H
 
+#include <cstdio>
+#include <cstdlib>
+#include <cstdint>
+#include <cstring>
+
 #include <cpuid.h>
 #include <sys/mman.h>
 #include <unistd.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include <cstdarg>
 
-#include <cstring>
-#include <iostream>
 #include <vector>
 
 #include <config.h>

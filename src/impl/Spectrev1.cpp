@@ -30,7 +30,7 @@ volatile void Spectrev1::read_byte( void volatile * const p_secret, uint8_t *p_v
             break;
         }
     }
-    D("[*] "<< std::hex << high << " (" << std::dec << results[high] << ") | " << std::hex << high2 << " (" << std::dec << results[high2] << ")");
+    D("[*] %02x (%d) | %02x (%d)\n", high, results[high], high2, results[high2]);
     *p_val = high;
 }
 

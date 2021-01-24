@@ -5,6 +5,7 @@
 #include <stdafx.h>
 #include <cacheutils.h>
 
+#include <iostream>
 #include <x86intrin.h>
 
 TEST_CASE ("read fs and gs", "[.read seg desc]")

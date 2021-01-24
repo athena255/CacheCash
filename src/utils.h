@@ -6,10 +6,14 @@
 #define CACHECASH_UTILS_H
 
 #ifdef _DEBUG
-#define D(msg) do{std::cout << msg << std::endl;}while(0);
+//#define D(msg) do{std::cout << msg << std::endl;}while(0);
+#define D(...) do{printf(__VA_ARGS__);} while(0)
 #else
-#define D(msg)do{}while(0);
+#define D(...)do{}while(0);
 #endif
+
+#define ERR(...) do{fprintf(stderr, __VA_ARGS__); fflush(stderr); exit(EXIT_FAILURE);} while(0)
+
 #define MEM_ADD(addr, off) reinterpret_cast<void*>(reinterpret_cast<uint8_t*>(addr) + off)
 #define CVMEM_ADD(addr, off) reinterpret_cast<void volatile * const>(reinterpret_cast<uint8_t volatile * const>(addr) + off)
 #define PTR_ADD(type, mem, off) reinterpret_cast<type>(reinterpret_cast<uint8_t *>(mem) + (off))
@@ -44,16 +48,6 @@ static inline T* find_pattern(T *pattern, size_t pattern_len, T *data, size_t da
             return &data[i];
     }
     return nullptr;
-}
-
-static inline void ERR(const char *format, ...)
-{
-    va_list args;
-    va_start(args, format);
-    vfprintf(stderr, format, args);
-    va_end(args);
-    fflush(stderr);
-    exit(EXIT_FAILURE);
 }
 
 static inline void * map_file(char const *file_name, size_t *n_bytes)

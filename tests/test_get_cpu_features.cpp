@@ -1,6 +1,7 @@
 #include <catch2/catch.hpp>
 #include <stdafx.h>
 #include <cpu_info.h>
+#include <iostream>
 
 TEST_CASE ("get vendor string", "[cpuid]")
 {

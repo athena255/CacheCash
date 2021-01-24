@@ -41,7 +41,7 @@ void LilElf::process_sections()
                 p_dynsym_hdr = p_shdr;
                 break;
             case SHT_STRTAB:
-//                    printf("found STRTAB at %d\n", i);
+                // There exists multiple SHT_STRTAB sections
 //                    for (auto i = 0; i < p_shdr->sh_size;)
 //                    {
 //                        i += printf("%s\n", PTR_ADD(char*, data, p_shdr->sh_offset + i));
@@ -59,16 +59,11 @@ void LilElf::process_symtab()
     {
         p_sym = get_sym(i);
         key = get_str(p_sym->st_name);
+        // Only map the first occurence of the symbol
         if (symtab.count(key) == 0)
         {
             symtab[key] = p_sym;
         }
-//        else
-//        {
-//            D("[!] multiple symbols present: " << key)
-//        }
-//            printf("%s\n\tstr_idx: %d, sym_val: %p, size: %d, section_idx: %d, st_info %d\n",
-//                   get_str(p_sym->st_name) , p_sym->st_name, p_sym->st_value, p_sym->st_size, p_sym->st_shndx, p_sym->st_info);
     }
 }
 
