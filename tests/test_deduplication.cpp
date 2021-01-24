@@ -18,8 +18,8 @@ TEST_CASE("hardware should deduplicate same images", "[.dedup]")
     auto victim2 = LilElf("./Spec1Victim");
     auto sym_1 = victim1.get_sym("array1_size");
     auto sym_2 = victim2.get_sym("array1_size");
-    auto m_sym1 = victim1.get_sym_value<void>(sym_1);
-    auto m_sym2 = victim2.get_sym_value<void>(sym_2);
+    auto m_sym1 = victim1.get_sym_value<void*>(sym_1);
+    auto m_sym2 = victim2.get_sym_value<void*>(sym_2);
 
     REQUIRE(sym_1 != sym_2);
     REQUIRE(m_sym1 != m_sym2);
@@ -49,7 +49,7 @@ TEST_CASE("search for pattern", "[.patternsearch]")
 {
     auto file_map = LilElf("./VictimStats");
     auto sym_array2 = file_map.get_sym("array2");
-    auto m_static_array2 = file_map.get_sym_def<uint8_t>(sym_array2);
+    auto m_static_array2 = file_map.get_sym_def<uint8_t*>(sym_array2);
     REQUIRE(m_static_array2[0] == 0xde);
     REQUIRE(m_static_array2[1] == 0xad);
     REQUIRE(m_static_array2[2] == 0xbe);
@@ -75,9 +75,9 @@ TEST_CASE("deduplication on VictimStats", "[DuplexPipe]")
     auto du_pipes = DuplexPipe("./VictimStats", NULL);
     auto victim = LilElf("./VictimStats");
     auto sym_array1_size = victim.get_sym("_ZL11array1_size");
-    auto m_array1_size = victim.get_sym_value<void>(sym_array1_size);
+    auto m_array1_size = victim.get_sym_value<void*>(sym_array1_size);
 
-    auto m_array2 = victim.get_sym_value<uint8_t>(victim.get_sym("_ZL6array2"));
+    auto m_array2 = victim.get_sym_value<uint8_t*>(victim.get_sym("_ZL6array2"));
 
     auto receive_and_print = [&](){
         du_pipes.receive_str();
@@ -133,9 +133,9 @@ TEST_CASE("Implementation of Proj2_tx", "[.dedup]")
 {
     static constexpr size_t num_signals = 200;
     auto proj2 = LilElf("./Proj2_rx");
-    auto m_rdy = proj2.get_sym_value<void>(proj2.get_sym("_ZL3rdy"));
-    auto m_zero = proj2.get_sym_value<void>(proj2.get_sym("_ZL4zero"));
-    auto m_one = proj2.get_sym_value<void>(proj2.get_sym("_ZL3one"));
+    auto m_rdy = proj2.get_sym_value<void*>(proj2.get_sym("_ZL3rdy"));
+    auto m_zero = proj2.get_sym_value<void*>(proj2.get_sym("_ZL4zero"));
+    auto m_one = proj2.get_sym_value<void*>(proj2.get_sym("_ZL3one"));
 
     auto send_rdy = [&](){ for (auto i = 0; i < num_signals; ++i) {flush(m_rdy);load(m_zero);load(m_one);}};
     auto send_one = [&](){for (auto i = 0; i < num_signals; ++i) {load(m_rdy); flush(m_one); load(m_zero);}};

@@ -34,7 +34,7 @@ TEST_CASE("thresh", "[cache]")
 
 TEST_CASE("cache for library fn", "[cache]")
 {
-    void *inst_mem = MEM_ADD(fopen, 0);
+    void *inst_mem = MEM_ADD(void*, fopen, 0);
     auto t1 = load(inst_mem);
     auto t2 = load(inst_mem);
     auto t3 = flush(inst_mem);
@@ -52,7 +52,7 @@ TEST_CASE("cache for library fn", "[cache]")
 
 TEST_CASE("cache for local fn", "[cache]")
 {
-    void *inst_mem = MEM_ADD(is_hit, 0);
+    void *inst_mem = MEM_ADD(void*, is_hit, 0);
     auto t1 = load(inst_mem);
     auto t2 = load(inst_mem);
     auto t3 = flush(inst_mem);
@@ -71,7 +71,7 @@ TEST_CASE("cache for local fn", "[cache]")
 TEST_CASE("cache for heap data", "[cache]")
 {
     int *mem = (int*) malloc(0x1000);
-    void *data_mem = MEM_ADD(mem, 696);
+    void *data_mem = MEM_ADD(void*, mem, 696);
     auto t1 = load(data_mem);
     auto t2 = load(data_mem);
     auto t3 = flush(data_mem);
@@ -98,7 +98,7 @@ TEST_CASE("L1 D$ latency", "[cache]")
     // bring into L2 and I$ and TLB
     printf("");
     // miss in D$, hit in L2
-    auto m_printf = MEM_ADD(printf, 0);
+    auto m_printf = MEM_ADD(void*, printf, 0);
     auto hit_L2 = load(m_printf );
     auto hit_d = load(m_printf);
     // flush to cause miss in D
@@ -115,9 +115,9 @@ TEST_CASE("L1 D$ latency", "[cache]")
 
 TEST_CASE("TLB miss", "[.cache]")
 {
-    auto base = load(MEM_ADD(flush, 0));
+    auto base = load(MEM_ADD(void*, flush, 0));
 
-    auto m_scanf = MEM_ADD(scanf, 0);
+    auto m_scanf = MEM_ADD(void*, scanf, 0);
     auto tlb_miss_d_miss = load(m_scanf);
     auto tlb_hit_d_hit = load(m_scanf);
     flush(m_scanf);
@@ -150,7 +150,7 @@ TEST_CASE("prefetch", "[cache]")
 {
     // PREFETCH loads the entire 64-byte aligned memory sequence into L1 data cache
     // sets cache-line state to Exclusive
-    auto m_scanf = MEM_ADD(scanf, 0);
+    auto m_scanf = MEM_ADD(void*, scanf, 0);
     flush(m_scanf);
     asm volatile("PREFETCHT0 (%0); mfence" ::"R"(m_scanf));
     auto t1 = load(m_scanf);
@@ -162,9 +162,9 @@ TEST_CASE("prefetch", "[cache]")
 
 TEST_CASE("test bad load", "[.cache]")
 {
-    auto legal = load(MEM_ADD(fprintf, 0));
-    auto illegal = load(MEM_ADD(23, 0));
-    auto legal_hit = load(MEM_ADD(fprintf, 0));
+    auto legal = load(MEM_ADD(void*, fprintf, 0));
+    auto illegal = load(MEM_ADD(void*, 23, 0));
+    auto legal_hit = load(MEM_ADD(void*, fprintf, 0));
     std::cout
         << "legal (miss): " << legal
         << " | illegal (miss): " << illegal
@@ -179,7 +179,7 @@ TEST_CASE("test const write", "[.cache]")
     int y = 64;
     volatile void *m_x = reinterpret_cast<volatile void*>(const_cast<int *>(&x));
     auto t1 = load(m_x);
-    auto t2 = load(MEM_ADD(&y, 0));
+    auto t2 = load(&y);
     int* p_x = const_cast<int *>(&x);
     *p_x = 32;
     printf("&x: %X | p_x: %X | x: %d | *p_x: %d\n", &x, p_x, x, *p_x);

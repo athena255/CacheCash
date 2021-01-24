@@ -32,7 +32,7 @@ uint64_t get_thresh(bool get_max_hit)
         for (volatile int i = 0; i < MAX_BYTE; ++i)
         {
             mix_i = MIX(i);
-            mem_addr = MEM_ADD(mem, mix_i*block_len);
+            mem_addr = MEM_ADD(void*, mem, mix_i*block_len);
 
             flush(mem_addr);
             miss_time = load(mem_addr);
