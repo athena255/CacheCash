@@ -5,7 +5,6 @@
 #ifndef CACHECASH_UTILS_H
 #define CACHECASH_UTILS_H
 
-#define ERR(msg) do {perror(msg); exit(EXIT_FAILURE);} while(0)
 #ifdef _DEBUG
 #define D(msg) do{std::cout << msg << std::endl;}while(0);
 #else
@@ -25,6 +24,37 @@
 // Require: 0 <= i <= 255
 // Can replace 173 and 17, prime numbers seem to work best
 #define MIX(_i) (((_i*167) + 11) & 255)
+
+template <typename T>
+static inline T* find_pattern(T *pattern, size_t pattern_len, T *data, size_t data_size, size_t offset = 0)
+{
+    size_t i, j;
+    if (pattern_len > data_size - offset)
+        return nullptr;
+    for (i = offset; i < data_size; ++i)
+    {
+        for (j = 0ul; j < pattern_len; ++j)
+        {
+            if (data[i+j] != pattern[j])
+            {
+                break;
+            }
+        }
+        if (j == pattern_len)
+            return &data[i];
+    }
+    return nullptr;
+}
+
+static inline void ERR(const char *format, ...)
+{
+    va_list args;
+    va_start(args, format);
+    vfprintf(stderr, format, args);
+    va_end(args);
+    fflush(stderr);
+    exit(EXIT_FAILURE);
+}
 
 static inline void * map_file(char const *file_name, size_t *n_bytes)
 {

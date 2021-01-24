@@ -6,3 +6,5 @@
 
 // Maximum byte value is 255
 #define MAX_BYTE 256
+
+#define MAX_RX_BUF 0x200

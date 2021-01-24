@@ -16,6 +16,11 @@ add_executable(Spec1Attack
         src/impl/Spectrev1.cpp
         src/impl/lilelf.cpp)
 
+add_executable(VictimStats
+        mains/victimstats.cpp
+        src/impl/cpu_info.cpp
+        src/impl/cacheutils.cpp)
+
 find_package(Catch2 REQUIRED)
 
 add_executable(CPUFeatures_tests

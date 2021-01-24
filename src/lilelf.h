@@ -45,21 +45,35 @@ public:
     }
 
     // Gets the virtual address of sym relative to data
+    // Assuming that the symbol is NOT relocatable
     template <typename T>
     inline T* get_sym_value(Elf64_Sym *sym)
     {
+        // if symbol is not relocatable, then st_value is an absolute address
+        // st_value is a section-relative offst if symbol is relocatable
         return reinterpret_cast<T*>(&data[sym->st_value]);
+    }
+
+    inline uint8_t& operator[](int i) const
+    {
+        return data[i];
     }
 
     // Gets the file offset of sym relative to data
     // This is useful for looking at initialization values
     template <typename T>
-    inline T* get_static_sym_value(Elf64_Sym *sym)
+    inline T* get_sym_def(Elf64_Sym *sym)
     {
+        // Get the section where this symbol is defined
         auto p_sec = get_section(sym->st_shndx);
         // subtract sym's VA from VA of its section and then add the file offset of its
         // section
         return reinterpret_cast<T*>(&data[sym->st_value - p_sec->sh_addr + p_sec->sh_offset]);
+    }
+
+    inline uint8_t* search_bytes(char *pattern, size_t pattern_len, size_t offset = 0)
+    {
+        return find_pattern(reinterpret_cast<uint8_t*>(pattern), pattern_len, data, data_size, offset);
     }
 
 private:
