@@ -30,7 +30,8 @@ public:
             close(tx[WRITE]);
             close(tx[READ]);
             close(rx[WRITE]);
-            execve(cmd, args, NULL);
+            if (-1 == execve(cmd, args, NULL))
+                ERR("[!] Failed to execute: %s", cmd);
         }
         else
         {

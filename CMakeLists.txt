@@ -10,16 +10,16 @@ add_executable(Spec1Victim
         mains/spectre1victim.cpp)
 
 add_executable(Spec1Attack
-        mains/spectre1attack.cpp
         src/impl/cpu_info.cpp
         src/impl/cacheutils.cpp
         src/impl/Spectrev1.cpp
-        src/impl/lilelf.cpp)
+        src/impl/lilelf.cpp
+        mains/spectre1attack.cpp)
 
 add_executable(VictimStats
-        mains/victimstats.cpp
         src/impl/cpu_info.cpp
-        src/impl/cacheutils.cpp)
+        src/impl/cacheutils.cpp
+        mains/victimstats.cpp)
 
 find_package(Catch2 REQUIRED)
 

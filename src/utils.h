@@ -7,7 +7,7 @@
 
 #ifdef _DEBUG
 //#define D(msg) do{std::cout << msg << std::endl;}while(0);
-#define D(...) do{printf(__VA_ARGS__);} while(0)
+#define D(...) do{printf(__VA_ARGS__); fflush(stdout);} while(0)
 #else
 #define D(...)do{}while(0);
 #endif
@@ -54,7 +54,7 @@ static inline void * map_file(char const *file_name, size_t *n_bytes)
 {
     auto fd = open(file_name, O_RDONLY, 0);
     if (fd < 0)
-        ERR("[!] Failed to open file");
+        ERR("[!] Failed to open file: %s\n", file_name);
 
     struct stat buf{};
     stat(file_name, &buf);
@@ -62,7 +62,7 @@ static inline void * map_file(char const *file_name, size_t *n_bytes)
     close(fd);
 
     if (seg == MAP_FAILED)
-        ERR("[!] Failed to map file");
+        ERR("[!] Failed to map file\n");
 
     *n_bytes = buf.st_size;
 
