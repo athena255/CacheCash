@@ -12,7 +12,6 @@ add_executable(Spec1Victim
 add_executable(Spec1Attack
         src/impl/cpu_info.cpp
         src/impl/cacheutils.cpp
-        src/impl/Spectrev1.cpp
         src/impl/lilelf.cpp
         mains/spectre1attack.cpp)
 
@@ -43,7 +42,6 @@ add_executable(Spectrev1_orig_tests
 add_executable(Spectrev1_tests
         src/impl/cpu_info.cpp
         src/impl/cacheutils.cpp
-        src/impl/Spectrev1.cpp
         tests/test_main.cpp
         tests/test_specv1.cpp)
 
